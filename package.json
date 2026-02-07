@@ -1,0 +1,40 @@
+{
+  "name": "coe-ai",
+  "version": "1.0.0",
+  "description": "COE AI LLM Inference Client - A TypeScript/JavaScript client for the COE AI LLM API",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
+    "test": "node test/usage.js"
+  },
+  "keywords": [
+    "coe-ai",
+    "llm",
+    "inference",
+    "api",
+    "ollama",
+    "ai",
+    "machine-learning"
+  ],
+  "author": "COE AI Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/upes-coeai/coe-ai-npm"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0"
+  }
+}
