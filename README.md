@@ -42,7 +42,7 @@ async function main() {
   try {
     // Generate text
     const response = await llm.generate({
-      model: 'tinyllama:latest',
+      model: 'qwen3.8',
       prompt: 'Explain quantum computing in one sentence.'
     });
 
@@ -62,7 +62,7 @@ main();
 ```typescript
 const llm = new LLMinfer({
   apiKey: string,    // Required: Your API key
-  host?: string      // Optional: Server URL (default: http://10.9.6.165:8000)
+  host?: string      // Optional: Server URL (default: https://coeai.ddn.upes.ac.in)
 });
 ```
 
@@ -72,12 +72,12 @@ Generate text from a prompt.
 
 ```typescript
 const response = await llm.generate({
-  model: 'tinyllama:latest',
+  model: 'qwen3.8',
   prompt: 'Write a poem about coding.',
-  maxTokens: 100,       // optional (default: 512)
+  maxTokens: 2048,      // optional (default: 2048; the model reasons first and that counts)
   temperature: 0.7,     // optional (default: 0.7)
   topP: 1.0,            // optional (default: 1.0)
-  contextWindow: 2048   // optional (default: 2048)
+  // contextWindow is deprecated and ignored (context is fixed per model)
 });
 ```
 
@@ -93,17 +93,17 @@ const response = await llm.chat(
     { role: 'assistant', content: 'France won the 1998 World Cup.' },
     { role: 'user', content: 'Who did they beat?' }
   ],
-  'tinyllama:latest'
+  'qwen3.8'
 );
 ```
 
 ### Vision (Image-to-Text)
 
-Analyze images using vision-capable models (e.g., `llama4:16x17b`).
+Send images to the model (the server tells you if the selected model can't read images).
 
 ```typescript
 const response = await llm.generate({
-  model: 'llama4:16x17b',
+  model: 'qwen3.8',
   inferenceType: 'image-to-text',
   prompt: 'Describe this image details.',
   messages: [
@@ -130,7 +130,7 @@ Stream the response in real-time.
 
 ```typescript
 const response = await llm.generate({
-  model: 'tinyllama:latest',
+  model: 'qwen3.8',
   prompt: 'Write a long story...',
   stream: true
 });
@@ -140,6 +140,15 @@ const response = await llm.generate({
 console.log(response.response);
 ```
 
+### Models and keys
+
+| Model | Context window |
+|-------|----------------|
+| `qwen3.8` | 256K tokens |
+| `qwen3.8-1m` | 1M tokens |
+
+Get a key at https://coeai.ddn.upes.ac.in/api-access: book a one-hour slot (the key works only in that hour) or request a 30-day persistent key (subject to approval). The server is also OpenAI-compatible at `https://coeai.ddn.upes.ac.in/v1`, so the official `openai` package works too.
+
 ### Listing Models
 
 Get a list of all available models on the server.
@@ -147,7 +156,7 @@ Get a list of all available models on the server.
 ```typescript
 const models = await llm.list_models();
 console.log('Available models:', models);
-// ['tinyllama:latest', 'llama4:16x17b', ...]
+// ['qwen3.8', 'qwen3.8-1m']
 ```
 
 ## Error Handling

@@ -26,8 +26,8 @@ import {
  * COE AI LLM inference client for LAN access.
  *
  * Supports:
- * - text-to-text: All available text models
- * - image-to-text: Vision-capable models (llama4:16x17b, llama3.2-vision:11b, etc.)
+ * - text-to-text: `qwen3.8` (256K context), `qwen3.8-1m` (1M context) and `gemma-4` (8K context)
+ * - image-to-text: sent to the same models; the server rejects it if the model can't read images
  * - streaming: Real-time response streaming
  * - custom messages: Advanced conversation handling
  *
@@ -37,7 +37,7 @@ import {
  *
  * const llm = new LLMinfer({ apiKey: 'your-key' });
  * const response = await llm.generate({
- *   model: 'tinyllama:latest',
+ *   model: 'qwen3.8',
  *   prompt: 'Hello!'
  * });
  * ```
@@ -46,13 +46,6 @@ export class LLMinfer {
     private readonly apiKey: string;
     private readonly host: string;
     private readonly client: AxiosInstance;
-
-    /** Vision-capable models (can be extended as new models are added) */
-    static readonly VISION_MODELS = new Set([
-        'llama4:16x17b',
-        'llama4:128x17b',
-        'llama3.2-vision:11b',
-    ]);
 
     /**
      * Initialize the COE AI LLM inference client.
@@ -69,7 +62,7 @@ export class LLMinfer {
         }
 
         this.apiKey = config.apiKey.trim();
-        this.host = (config.host || 'http://10.9.6.165:8000').replace(/\/$/, '');
+        this.host = (config.host || 'https://coeai.ddn.upes.ac.in').replace(/\/$/, '');
 
         this.client = axios.create({
             baseURL: this.host,
@@ -92,7 +85,7 @@ export class LLMinfer {
      * @example
      * ```typescript
      * const response = await llm.generate({
-     *   model: 'tinyllama:latest',
+     *   model: 'qwen3.8',
      *   prompt: 'Explain AI',
      *   maxTokens: 100
      * });
@@ -104,10 +97,9 @@ export class LLMinfer {
             prompt,
             messages,
             inferenceType = 'text-to-text',
-            maxTokens = 512,
+            maxTokens = 2048,
             temperature = 0.7,
             topP = 1.0,
-            contextWindow = 2048,
             stream = false,
         } = options;
 
@@ -123,14 +115,6 @@ export class LLMinfer {
             throw new Error("Either 'prompt' or 'messages' must be provided");
         }
 
-        // Warn if model might not support vision (for image-to-text)
-        if (inferenceType === 'image-to-text' && !LLMinfer.VISION_MODELS.has(model)) {
-            console.warn(
-                `Model '${model}' may not support image-to-text. ` +
-                `Recommended vision models: ${[...LLMinfer.VISION_MODELS].join(', ')}`
-            );
-        }
-
         // Prepare messages payload
         const payloadMessages: Message[] = messages || [
             { role: 'user', content: [{ type: 'text', text: prompt || '' }] },
@@ -143,7 +127,6 @@ export class LLMinfer {
         formData.append('max_tokens', maxTokens.toString());
         formData.append('temperature', temperature.toString());
         formData.append('top_p', topP.toString());
-        formData.append('context_window', contextWindow.toString());
         formData.append('stream', stream.toString());
         formData.append('prompt', prompt || '');
         formData.append('messages', JSON.stringify(payloadMessages));
@@ -178,7 +161,7 @@ export class LLMinfer {
      * ```typescript
      * const response = await llm.chat(
      *   [{ role: 'user', content: 'What is AI?' }],
-     *   'tinyllama:latest'
+     *   'qwen3.8'
      * );
      * ```
      */
@@ -251,8 +234,8 @@ export class LLMinfer {
             case 401:
                 return new AuthenticationError(
                     'Authentication failed. Invalid or expired API key.\n' +
-                    'Please check your API key and try again.\n' +
-                    'Get a new key from: https://coeai.ddn.upes.ac.in'
+                    'Slot keys only work during the hour you booked, and persistent keys last 30 days.\n' +
+                    'Book a slot or request a key at: https://coeai.ddn.upes.ac.in/api-access'
                 );
             case 400:
                 return new COEAIError(

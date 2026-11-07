@@ -8,7 +8,7 @@
 export interface LLMinferConfig {
     /** Your COE AI API authentication key */
     apiKey: string;
-    /** The FastAPI server endpoint URL (default: http://10.9.6.165:8000) */
+    /** The FastAPI server endpoint URL (default: https://coeai.ddn.upes.ac.in) */
     host?: string;
 }
 
@@ -35,7 +35,7 @@ export interface Message {
  * Options for the generate method
  */
 export interface GenerateOptions {
-    /** Model name (e.g., "tinyllama:latest", "llama4:16x17b") */
+    /** Model name: "qwen3.8" (256K), "qwen3.8-1m" (1M) or "gemma-4" (8K) */
     model: string;
     /** Text prompt for generation */
     prompt?: string;
@@ -43,13 +43,13 @@ export interface GenerateOptions {
     messages?: Message[];
     /** Type of inference: 'text-to-text' or 'image-to-text' */
     inferenceType?: 'text-to-text' | 'image-to-text';
-    /** Maximum number of tokens to generate (default: 512) */
+    /** Maximum number of tokens to generate (default: 2048). The models reason before answering and that counts towards this limit. */
     maxTokens?: number;
     /** Sampling temperature 0.0-2.0 (default: 0.7) */
     temperature?: number;
     /** Nucleus sampling parameter 0.0-1.0 (default: 1.0) */
     topP?: number;
-    /** Context window size (num_ctx) (default: 2048) */
+    /** @deprecated Ignored: context is fixed per model */
     contextWindow?: number;
     /** Enable streaming response (default: false) */
     stream?: boolean;

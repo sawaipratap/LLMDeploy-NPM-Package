@@ -9,12 +9,12 @@
  *
  * const llm = new LLMinfer({
  *   apiKey: 'your-api-key',
- *   host: 'http://10.9.6.165:8000' // optional
+ *   host: 'https://coeai.ddn.upes.ac.in' // optional
  * });
  *
  * // Generate text
  * const response = await llm.generate({
- *   model: 'tinyllama:latest',
+ *   model: 'qwen3.8',
  *   prompt: 'Explain machine learning in simple terms'
  * });
  *

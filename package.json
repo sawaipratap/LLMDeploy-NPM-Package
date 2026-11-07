@@ -1,6 +1,6 @@
 {
   "name": "coe-ai",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "description": "COE AI LLM Inference Client - A TypeScript/JavaScript client for the COE AI LLM API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,9 +17,11 @@
     "llm",
     "inference",
     "api",
-    "ollama",
     "ai",
-    "machine-learning"
+    "machine-learning",
+    "qwen",
+    "vllm",
+    "openai-compatible"
   ],
   "author": "COE AI Team",
   "license": "MIT",
